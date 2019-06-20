@@ -1,0 +1,881 @@
+﻿1. Challenges for big data computing: 
+1. Scalability
+   1. Volume, huge amount of data.
+   2. Velocity, the speed of accumulation of data.
+1. Reliability
+   1. Veracity, inconsistencies and uncertainty in data
+1. Productivity
+2. Variety, different formats of data from various sources
+3. Value, extract useful data
+1. Three perspectives in Big Data Computing: 
+   1. Architecture: 
+   2. algorithms:
+      1. parallelism
+      2. Scalability
+      3. distributed data
+   1. Programming: Map reduce
+1. Map reduce is to extract something you care about and group by key, and then aggregate, summarize, filter or transform.
+   1. Environment
+      1. Partitioning the input data
+      2. Scheduling the program’s execution across a set of machines
+      3. Performing the group by key step
+      4. Handling machine failures
+      5. Managing required inter-machine communication
+   1. Resilient distributed dataset (RDD)
+This a fault-tolerant collection of elements that can be operated on in parallel.
+      1. Two ways to create it
+         * Parallelizing an existing collection in your driver program.
+         * Referencing a dataset in an external storage system.
+   * Joins: RDD + RDD  -> RDD
+      1. A Map process turns:
+         * Each input tuple R(a, b) into key-value pair (b,(a, R))
+         * Each input tuple S(b, c) into (b,(c, S))
+      1. Map processes send each key-value pair with key b to Reduce process h(b).
+      2. Each Reduce process matches all the pairs (b, (a, R)) with all (b, (c, S)) and outputs (a, b, c).
+1. Algorithm in Spark:
+1. Selection, Union, Intersection, Difference, Grouping, Joins, 
+2. https://nbviewer.jupyter.org/github/jkthompson/pyspark-pictures/blob/master/pyspark-pictures.ipynb
+3. Matrix-Vector is to compute the product of matrix M with vector v
+4.      1. Storage: The matrix and vectors are stored in a sparse form:
+   1. Triplets of the form () for the non-zero entries of the matrix.
+   2. Pairs of the form () for the elements of the vector.
+      1. Case 1: the vector fits in memory
+      1. In this case the vector that we want multiply is loaded in memory at each mapper.
+      2. The mapper reads a chunk of the matrix M, and for each entry
+      3. () it outputs the key-value pair (). 
+      4. The reducer takes the sum of all values that are associated with row.
+         1. Case 2: the vector does not fit in memory
+         1. We split the matrix and the vector into stripes and then perform the computation for each stripe of the matrix, where the vector can fit into memory.
+         * Matrix-Matrix is to repeat matrix-vector multiplication across each column in B.   
+            1. Cloud Computing is a general term used to describe a new class of network based computing that takes place over the Internet.
+            1. Characteristics: 
+            1. Common Characteristics:
+  
+
+            1. Essential Characteristics
+  
+
+            1. Different cloud computing layers
+  
+
+            1. cloud computing service layers
+  
+
+            1. Basic cloud characteristics:
+            1. No need to know
+Underlying the details of infrastructure, application interface with the infrastructure via the APIs.
+            1. flexibility and elasticity are to allow these systems to scale up and down at will.
+            2. pay as much as used and needed
+            3. always on! anywhere and any place
+            1. Cloud storage
+            2. Advantages of cloud computing
+            1. Easier group collaboration
+            2. Device independence
+            1. Disadvantages of cloud computing
+            1. Requires a constant internet connection
+            2. Does not work will with low speed connections
+            3. Features might be limited
+            4. Can be slow by lots of reasons.
+            5. Stored data might not be secure and it may be lost.
+            1. Frequency Item
+            1. The market-basket model
+            * A large set of items
+            * A large set of baskets
+            * Each basket is a small subset of items
+            1. Let ,   be itemsets,  an association rule and  a set of transactions of a given database. 
+               1. Frequent Itemset
+               * Support for itemset I: number of baskets containing all items in I
+               * an indication of how frequently the itemset appears in the dataset.
+               *                   * Confidence is an indication of how often the rule has been found to be true.
+                  *                      *  means the support of the union of the items in X and Y.
+                     *  can be rewrite as probability, where  and  are the events that a transaction contains itemset  and  , respectively.
+                        * Given a support threshold s, then sets of items that appear in at least s baskets are called frequent itemsets.
+                        * Frequent itemset is an itemset whose support is greater than some user-specified minimum support (denoted , where k is the size of the itemset)
+                           * Interest of an association rule : difference between its confidence and the fraction of baskets that contain  
+                              *                                  *  is how many time of j appears in the number of baskets
+                                    * Interesting rules are those with high positive or negative interest values (usually above 0.5) 
+                                    1. Compacting the output
+                                    * To reduce the number of rules we can post-process them and only output:
+                                    * Maximal frequent itemsets: 
+An itemset is maximal frequent if none of its immediate supersets is frequent and itemset must be a frequent itemset.
+Note: immediate supersets: if A is a subset of B and next to B, B will be immediate superset. 
+                                    * Closed itemsets:
+An itemset is closed if none of its immediate supersets has the same support as the itemset. 
+
+
+                                    1. Find frequent itemsets
+                                    1. Main-memory is the critical resource.
+                                    1. Find frequent Pairs
+                                    1. Approach:
+                                    * Generate all the itemsets
+                                    * Count (keep track) of those itemsets that in the end turn out to be frequent
+                                    1. Naïve algorithm
+                                    * From each basket of n items, generate its  pairs by two nested loops.
+                                    * Fails if  exceeds main memory
+                                       1. Counting Pairs in memory
+                                       * Approach
+                                       * Count all pairs using a matrix which only requires 4 bytes per pair.
+                                       * Keep a table of triples [i, j, c] = the count of the pair of items {i, j} is c. This uses 12 bytes per pair (but only for pairs with count>0)
+                                       1. A-Priori Algorithm
+                                       * Pass 1: read baskets and count in main memory the occurrences of each individual item. (items that appear >= s times are the frequent items)
+                                       * Pass 2: read baskets again and count in main memory only those pairs where both elements are frequent (from pass 1)
+                                       1. PCY algorithm
+                                       * Pass 1: in addition to item counts, maintain a hash table with as many buckets as fit in memory. Keep a count for each bucket into which pairs of items are hashed.
+                                       * Note: 
+                                       * Pairs of items need to be generated from the input file; they are not present in the file.
+                                       * We are not just interested in the presence of a pair, but we need to see whether it is present at least s (support) times.
+                                       * Bucket contains a frequent pair then the bucket is surely frequent.
+                                       * However, even without any frequent pair, a bucket can still be frequent. 
+                                       * But, for a bucket with total count less than s, none of its pairs can be frequent.
+                                       * Pass 2: only counts pairs that hash to frequent buckets
+                                       * Count all pairs {i, j} that meet the condition for being a candidate pair
+                                       * Both i and j are frequent items
+                                       * The pair {i, j} hashes to a bucket whose bit in the bit vector is 1.
+                                       * Both conditions are necessary for the pair to have a chance of being frequent.
+                                       1. Multistage algorithm
+                                       * Limit number of candidates to be counted
+                                       * Key idea: after Pass 1 of PCY, rehash only those pairs that qualify for Pass 2 of PCY.
+                                       * i and j are frequent, and {i, j} hashes to a frequent bucket from Pass 1
+                                       * on middle pass, fewer pairs contribute to buckets, so fewer false positives.
+                                       * requires 3 passes over the data
+                                       * Pass 3: count only those pairs {i, j} that satisfy these candidate pair conditions:
+                                       * Both i and j are frequent items
+                                       * Using the first hash function, the pair hashes to a bucket whose bit in the first bit-vector is 1.
+                                       * Using the second has function, the pair hashes to a bucket whose bit in the second bit-vector is 1. 
+  
+
+                                       * Note:
+                                       * The two hash functions have to be independent
+                                       * We need to check both hashes on the third pass
+                                       1. Multihash
+                                       * Key idea: use several independent has tables on the first pass
+                                       * Risk: halving the number of buckets doubles the average count. (make sure most buckets less than count s)
+                                       * If so, we have multihash.
+  
+
+                                       1. Others algorithm with less than 2 Passes for finding frequent itemsets: 
+                                       * It is to use 2 or fewer passes for all sizes but may miss some frequent itemsets.
+                                       * Random sampling
+                                       * SON
+                                       * Toivonen
+
+
+                                       1. High dimensional data
+                                       1. Distance Measures
+                                       1. Jaccard distance/similarity
+                                       * The Jaccard similarity of two sets is the size of their intersection divided by the size of their union: 
+  
+
+                                       * Jaccard distance:
+  
+
+  
+
+                                       1. Axioms of Distance Measures
+                                       * D is a distance measure if it a function from pairs of points to real numbers such that:
+    
+                                       * Cosine distance
+                                       * Two points’ vectors make an angle, whose cosine is the normalized dot-product of the vectors
+
+                                       1. Other distance measures
+                                       *  norm = sum of the differences in each dimension. (aka Manhattan distance)
+                                       *  norm = square root of the sum of the squares of the differences between x and y in each dimension
+                                       *  norm = the maximum of the differences between x and y in any dimension
+                                       * Hamming distance = number of positions in which bit vectors differ
+                                          1. Distance measure for different sets
+                                          * Sets as vectors: measure similarity by cosine distance
+                                          * Sets as sets: measure similarity by the Jaccard distance
+                                          * Sets as points: measure similarity by Euclidean distance
+                                          1. Documents as high-dim data
+  
+
+                                          1. Step 1: shingling: convert documents to sets
+We used hashing to assign each shingle an ID
+                                          * Simple approaches:
+                                          * Document = set of words appearing in document
+                                          * Document = set of ‘important’ words
+                                          * Need to account for ordering of words
+                                          * Shingles: A k-shingle (or k-gram) for a document is a sequence of k tokens that appears in the doc.
+                                          * Tokens can be characters, words or something else, depending on the application
+                                          * Assume tokens = character for examples
+   
+                                          * To compress long shingles, we can hash them to 4 bytes
+                                          * Represent a document by the set of hash values of its k-shingles
+                                          * Idea: two documents could (rarely) appear to have shingles in common, when in fact only the hash-value were shared.
+  
+
+                                          * Similarity Metric for Shingles
+                                          * Document  is a set of its k-shingles 
+                                          * Equivalently, each document is 0/1 vector in the space of k-shingles 
+                                             * Each unique shingle is a dimension
+                                             * Vectors are very sparse
+                                             * A natural similarity measure is the Jaccard similarity
+                                             * You must pick k large enough, or most documents will have most shingles.
+                                             1. Step 2: Minhashing: Concert large set to short signatures, while preserving similarity
+We used similarity preserving hashing to generate signatures with property
+
+We used hashing to get around generating random permutations
+                                             * Represent sets as Boolean vectors in a matrix
+                                             * Find similar columns while computing small signatures
+Note: Similarity of columns == similarity of signatures
+                                             * Naïve approach will take too much time
+                                             * Signatures of columns: small summaries of columns
+                                             * Examine pairs of signatures to find similar columns
+                                             * Check that columns with similar signatures are really similar
+                                             * Hashing columns (signatures)
+                                             * Key idea: “hash” each column C to a small signature , such that:
+                                                *  is small enough that the signature fits in RAM
+                                                *  is the same as the similarity of signatures  and 
+                                                   * Goal: find a hash function  such that 
+                                                      * If  is high, then with high prob. 
+
+                                                         * It  is low, then with high prob.
+
+                                                            * Min-hashing: a suitable hash function for the Jaccard similarity
+                                                            * Define a hash function  the index of the first (in the permuted order ) row in which column  has value 1:
+
+                                                               * Use several independent hash functions to create a signature of a column
+                                                               * Property
+                                                               * Choose a random permutation 
+                                                               *  by 
+  
+
+                                                                  * Now generalize to multiple hash functions
+                                                                  * The similarity of two signatures is the fraction of the hash functions in which they agree.
+                                                                  * Note: similarity of columns is the same as the expected similarity of their signatures because of min-hashing property
+                                                                  * Compress long bit vector into short signatures
+                                                                  * Pick k = 100 random permutations of the rows
+                                                                  * Think of sig(C) as a column vector
+                                                                  * Sig(C)[i] = according to the i-th permutation, the index of the first row that has a 1 in column C
+
+                                                                  * Implementation Trick
+      
+                                                                  1. Step 3: Locality-Sensitive Hashing: Focus on pairs of signatures likely to be similar documents 
+We used hashing to find candidate pairs of similarity 
+                                                                  * Goal: find documents with Jaccard similarity at least s
+                                                                  * General idea of LSH: 
+                                                                  * Use a function  that tells whether  and  is a candidate pair: a pair of elements whose similarity must be evaluated.
+                                                                     * For min-hash matrices:
+                                                                     * Hash columns of signature matrix  to many buckets.
+                                                                     * Each pair of documents that hashes into the same bucket is a candidate pair.
+                                                                        * Candidates: 
+                                                                        * Pick a similarity threshold 
+                                                                        * Columns  and  of  are a candidate pair if their signatures agree on at least fraction  of their rows:
+) for at least frac.  values of 
+                                                                           * We expect documents  and  to have the same (Jaccard) similarity as their signatures
+                                                                              * LSH:
+                                                                              * Big idea: Hash columns of signature matrix  several times.
+                                                                              * Arrange that (only) similar columns are likely to hash to the same bucket, with high probability.
+                                                                              * Candidate pairs are those that hash to the same bucket.
+                                                                                 * Partition  into Bands
+                                                                                    * Divide matrix  into  bands of  rows.
+                                                                                    * For each band, hash its portion of each column to a hash table with  buckets.
+                                                                                       * Make  as large as possible
+                                                                                          * Candidate column pairs are those that hash to the same bucket for  band.
+                                                                                          * Tune  and  to catch most similar pairs, but few non-similar pairs.
+                                                                                             * Simplifying Assumption
+                                                                                             * There are enough buckets that columns are unlikely to hash to the same bucket unless they are identical in a particular band.
+                                                                                             * Hereafter, we assume that “same bucket” means “identical in that band”.
+                                                                                             * Assumption needed only to simplify analysis, not for correctness of algorithm.
+                                                                                             * LSH summary:
+                                                                                             * Tune  to get almost all pairs with similar signatures, but eliminate most pairs that do not have similar signatures
+                                                                                             * Check in main memory that candidate pairs really do have similar signatures
+                                                                                             * Optional: In another pass through data, check that the remaining candidate pairs really represent similar documents
+                                                                                                1. Clustering is given a set of points, with a notion of distance between points, group the points into some number of clusters.
+                                                                                                * Methods
+                                                                                                * Hierarchical: 
+                                                                                                * agglomerative (bottom up)
+                                                                                                * Divisive (top down)
+                                                                                                * Point assignment
+                                                                                                * Maintain a set of clusters
+                                                                                                * Points belong to nearest cluster
+                                                                                                * Hierarchical clustering
+                                                                                                * Key operation: repeatedly combine two nearest clusters
+                                                                                                * Problems:
+                                                                                                * How to represent a cluster of many points?
+                                                                                                * Euclidean case:   
+                                                                                                   * each cluster has a centroid = average of its point
+                                                                                                   * Non-Euclidean case: 
+                                                                                                   * clustroid = (data) point “closest” to other points
+                                                                                                   * For distance metric d clustroid c of cluster  is 
+
+                                                                                                      * Meanings of “closest”
+                                                                                                      * Smallest maximum distance to other points
+                                                                                                      * Smallest average distance to other points
+                                                                                                      * Smallest sum of squares of distances to other points
+                                                                                                      * How to determine “nearness” of clusters?
+                                                                                                      * Euclidean case: 
+                                                                                                      * Measure cluster distances by distances of centroids.
+                                                                                                      * Non-Euclidean case:
+                                                                                                      * Approach 1: 
+Treat clustroid as if it were centroid, when computing inter-cluster distances.
+                                                                                                      * Approach 2:
+Inter-cluster distance = minimum of the distances between any two points, one from each cluster
+                                                                                                      * Approach 3:
+Pick a notion of “cohesion” of clusters, e.g., maximum distance from the clustroid. 
+Merge clusters whose union is most cohesive.
+                                                                                                      * Approach 3.1: 
+Use the diameter of the merged cluster = maximum distance between points in the cluster
+                                                                                                      * Approach 3.2: 
+Use the average distance between points in the cluster
+                                                                                                      * Approach 3.3: 
+Use a density-based approach
+Take the diameter or avg. distance, e.g., and divide by the number of points in the cluster
+                                                                                                      * K-means clustering
+                                                                                                      * Algorithms
+                                                                                                      * Assumes Euclidean space/distance
+                                                                                                      * Start by picking , the number of clusters
+                                                                                                         * How to select?
+                                                                                                            * Try different , looking at the change in the average distance to centroid as  increases.
+                                                                                                            * Average falls rapidly until right k, then changes little.
+                                                                                                               * Initialize clusters by picking one point per cluster
+                                                                                                               * Populating clusters
+1)For each point, place it in the cluster whose current centroid it is nearest.
+2) After all points are assigned, update the locations of centroids of the k clusters.
+3) Reassign all points to their closest centroid.
+                                                                                                               * Sometimes moves points between clusters.
+Repeat 2 and 3 until convergence.
+                                                                                                               * Convergence: Points don’t move between clusters and centroids stabilize.
+                                                                                                               * The BFR algorithm (for large data)
+                                                                                                               * BFR [Bradley-Fayyad-Reina] is a variant of k-means designed to handle very large (disk-resident) data sets.
+                                                                                                               * Assumes that clusters are normally distributed around a centroid in a Euclidean space.
+                                                                                                               * Standard deviations in different dimensions may vary
+                                                                                                               * Clusters are axis-aligned ellipses
+                                                                                                               * Efficient way to summarize clusters (want memory required  and not )
+                                                                                                                  * Points are read from disk one main-memory-full at a time
+                                                                                                                  * Most points from previous memory loads are summarized by simple statistics
+                                                                                                                  * Processing the “Memory-Load” of points
+                                                                                                                  * Find those points that are “sufficiently close” to a cluster centroid and add those points to that cluster and the DS
+                                                                                                                  * Use any main-memory clustering algorithm to cluster the remaining points and the old RS. (Clusters go to the CS; outlying points to the RS)
+                                                                                                                  * DS set: Adjust statistics of the clusters to account for the new points --- Add Ns, SUMs, SUMSQs
+                                                                                                                  * Consider merging compressed sets in the CS
+                                                                                                                  * If this is the last round, merge all compressed sets in the CS and all RS points into their nearest cluster
+                                                                                                                  * To begin, from the initial load we select the initial centroids by some sensible approach:
+                                                                                                                     * Take  random points
+                                                                                                                     * Take a small random sample and cluster optimally
+                                                                                                                     * Take a sample; pick a random point, and then  more points, each as far from the previously selected points as possible
+                                                                                                                        * 3 sets of pints which we keep track of:
+                                                                                                                        * Discard set (DS):   
+                                                                                                                           * Points close enough to a centroid to be summarized
+                                                                                                                           * Compression set (CS): 
+                                                                                                                           * Groups of points that are close together but not close to any existing centroid
+                                                                                                                           * These points are summarized, but not assigned to a cluster
+                                                                                                                           * Retained set (RS): 
+                                                                                                                           * Isolated points waiting to be assigned to a compression set
+                                                                                                                           * How to decide whether to put a new point into a cluster
+                                                                                                                           * The Mahalanobis distance is less than a threshold
+                                                                                                                           * high likelihood of the point belonging to currently nearest centroid
+                                                                                                                           * Normalized Euclidean distance from centroid
+                                                                                                                           * For point  and centroid 
+
+                                                                                                                              * If clusters are normally distributed in  dimensions, then after transformation, one standard deviation
+                                                                                                                              * Accept a point for a cluster if its M.D. is < some threshold, e.g. 2 standard deviations
+                                                                                                                                 * Should 2 CS subclusters be combined?
+                                                                                                                                 * Compute the variance of the combined subclusters
+                                                                                                                                 * N, SUM, and SUMSQ allow us to make that calculation quickly
+                                                                                                                                 * Combine if the combined variance is below some threshold
+                                                                                                                                 * Many alternatives: Treat dimensions differently, consider density.
+                                                                                                                                 * Problem with BFR/k-means:
+                                                                                                                                 * Assumes clusters are normally distributed in each dimension
+                                                                                                                                 * And axes are fixed – ellipses at an angle are not OK
+                                                                                                                                 * The CURE (Clustering Using REpresentatives) algorithm (to clusters of arbitrary shapes)
+                                                                                                                                 * Methods:
+                                                                                                                                 * Assumes a Euclidean distance
+                                                                                                                                 * Allows clusters to assume any shape
+                                                                                                                                 * Uses a collection of representative points to represent clusters
+                                                                                                                                 * 2 Pass algorithm
+                                                                                                                                 * Pass 1:
+0) Pick a random sample of points that fit in main memory
+1) Initial clusters: 
+                                                                                                                                 * Cluster these points hierarchically – group nearest points/clusters
+2) Pick representative points:
+                                                                                                                                 * For each cluster, pick a sample of points, as dispersed as possible
+                                                                                                                                 * From the sample, pick representatives by moving them (say) 20% toward the centroid of the cluster
+                                                                                                                                 * Pass 2:
+                                                                                                                                 * Now, rescan the whole dataset and visit each point p in the data set
+                                                                                                                                 * Place it in the “closest cluster”
+                                                                                                                                 * Normal definition of “closest”: 
+                                                                                                                                 * Find the closest representative to p and assign it to representative’s cluster
+                                                                                                                                 1. Recommender systems
+                                                                                                                                 1. Formal Model
+                                                                                                                                 1.  = set of customers
+                                                                                                                                 2.  = set of items
+                                                                                                                                 3. Utility function 
+                                                                                                                                    *  set of ratings
+                                                                                                                                    *  is a totally ordered set. E.g.,0-5 stars, real number in [0, 1]
+                                                                                                                                       1. Utility Matrix
+                                                                                                                                       1. Key Problems
+                                                                                                                                       1. Gathering known ratings for matrix (How to collect the data in the utility matrix)
+                                                                                                                                       * Explicit
+                                                                                                                                       * Ask people to rate items
+                                                                                                                                       * Doesn’t work well in practice – people can’t be bothered
+                                                                                                                                       * Implicit
+                                                                                                                                       * Learn ratings from user actions
+                                                                                                                                       * Low ratings?
+                                                                                                                                       1. Extrapolate unknown ratings from the known ones (mainly interested in high unknown ratings)
+                                                                                                                                       * Key problems: utility matrix U is sparse
+                                                                                                                                       * Most people have not rated most items
+                                                                                                                                       * Approaches
+                                                                                                                                       * Content-based: recommend items to customer x similar to previous items rated highly by x
+  
+
+                                                                                                                                       * For each item, create an item profile which is a set (vector) of features.
+                                                                                                                                       * Use TF-IDF to pick important features
+                                                                                                                                       *  frequency of term (feature)  in doc (item)
+
+                                                                                                                                          *  number of docs that mention term 
+ total number of docs
+
+                                                                                                                                             * TF-IDF score:  
+                                                                                                                                             * Doc profile = set of words with highest TF-IDF scores, together with their scores
+                                                                                                                                                * User profile possibilities:
+                                                                                                                                                * Weighted average of rated item profiles
+                                                                                                                                                * Variations: weight by difference from average rating for item
+                                                                                                                                                * Prediction heuristic: Given user profile x and item profile I, estimate
+
+                                                                                                                                                * Pros:
+                                                                                                                                                * No need for data on other users
+                                                                                                                                                * Able to recommend to users with unique tastes
+                                                                                                                                                * Able to recommend new & unpopular items
+                                                                                                                                                * Able to provide explanations
+                                                                                                                                                * Cons:
+                                                                                                                                                * Finding the appropriate features is hard
+                                                                                                                                                * Recommendations for new users
+                                                                                                                                                * Overspecialization (Unable to exploit quality judgments of other users)
+                                                                                                                                                * Collaborative 
+                                                                                                                                                * User-user collaborative filtering
+Consider user . Find set  of other users whose ratings are similar to ’s ratings. Estimate ’s ratings based on ratings of users in .
+  
+
+                                                                                                                                                * Finding “similar” users
+                                                                                                                                                * Let  be the vector of user ’s ratings 
+                                                                                                                                                * Jaccard similarity measure   
+(ignores the value of the rating)
+
+
+                                                                                                                                                   * Cosine similarity measure   
+(treats missing rating as negative) 
+
+                                                                                                                                                      * Pearson correlation coefficient
+ items rated by both user  and 
+  
+
+                                                                                                                                                      * Rating predictions
+From similarity metric to recommendations:
+                                                                                                                                                      * Let  be the vector of user ’s ratings 
+                                                                                                                                                      * Let  be the set of  users most similar to  who have rated item 
+                                                                                                                                                         * Prediction for item  of user :
+
+  with  
+                                                                                                                                                            * Item-item collaborative filtering
+                                                                                                                                                            * For item , find other similar items
+                                                                                                                                                            * Estimate rating for item  based on ratings for similar items
+                                                                                                                                                            * It can use same similarity metrics and prediction functions as in user-user model
+  
+
+                                                                                                                                                               * Common Practice
+                                                                                                                                                               * Define similarity  of items  and 
+                                                                                                                                                               * Select  nearest neighbors  
+(items most similar to , that were rated by )
+                                                                                                                                                                  * Estimate rating  as the weighted average:
+  
+
+                                                                                                                                                                     * Pros: No feature selection needed
+                                                                                                                                                                     * Cons: 
+                                                                                                                                                                     * need enough users in the system to find a match
+                                                                                                                                                                     * Sparsity
+                                                                                                                                                                     * Can’t recommend an item that has not been previously rated
+                                                                                                                                                                     * Popularity bias.
+                                                                                                                                                                     * Hybrid methods
+                                                                                                                                                                     * Add content-based methods to collaborative filtering
+                                                                                                                                                                     * Latent factor based
+                                                                                                                                                                     1. Evaluating extrapolation methods 
+(how to measure success / performance of recommendation methods)
+                                                                                                                                                                     * Evaluating predictions
+                                                                                                                                                                     * Compare predictions with known ratings
+        
+                                                                                                                                                                     * 0/1 model
+       
+                                                                                                                                                                     * Problems with error measures
+                                                                                                                                                                     * Narrow focus on accuracy sometimes misses the point
+                                                                                                                                                                     * Prediction diversity
+                                                                                                                                                                     * Prediction context
+                                                                                                                                                                     * Order of predictions
+                                                                                                                                                                     * In practice, we care only to predict high ratings
+                                                                                                                                                                     * RMSE might penalize a method that does well for high ratings and badly for others
+                                                                                                                                                                     * In collaborative filtering: complexity
+                                                                                                                                                                     * Expensive step is finding most similar customers: 
+                                                                                                                                                                     * Too expensive to do at runtime
+                                                                                                                                                                     * Naïve pre-computation takes time 
+                                                                                                                                                                        * Near-neighbor search in high dimensions (LSH)
+                                                                                                                                                                        * Clustering
+                                                                                                                                                                        * Dimensionality reduction
+
+
+                                                                                                                                                                        1. Analysis of Large graphs: 
+                                                                                                                                                                        1. Link Analysis Algorithms: to compute importance of nodes in a graph
+                                                                                                                                                                        1. Page Rank
+                                                                                                                                                                        2. Topic-specific (personalized) Page Rank
+                                                                                                                                                                        3. Web spam detection algorithms
+                                                                                                                                                                        1. PageRank: 
+                                                                                                                                                                        1. The “Flow” formulation 
+                                                                                                                                                                        * Links as votes: 
+                                                                                                                                                                        * Page is more important if it has more links.
+                                                                                                                                                                        * Links from important pages count more
+                                                                                                                                                                        * Each link’s vote is proportional to importance of its source page.
+       
+                                                                                                                                                                        * The “Flow” Model 
+                                                                                                                                                                        * A “vote” from an important page is worth more
+                                                                                                                                                                        * A page is important if it is pointed to by other important pages
+                                                                                                                                                                        * Define a “rank”  for page   
+
+ out-degree of node 
+                                                                                                                                                                           * Example:
+
+
+                                                                                                                                                                           * Additional constraint forces uniqueness:
+                                                                                                                                                                           *  
+                                                                                                                                                                           * we can have unique solutions, but it only works in small example
+                                                                                                                                                                              * Matrix Formulation
+                                                                                                                                                                              * Stochastic adjacency matrix M
+                                                                                                                                                                              * Let page  has  out-links
+                                                                                                                                                                              * If , them  else 
+                                                                                                                                                                                 * M is a column stochastic matrix and columns sum to 1.
+                                                                                                                                                                                 * Rank vector r: vector with an entry per page 
+                                                                                                                                                                                 *  is the importance score of page 
+                                                                                                                                                                                 *                                                                                                                                                                                     * The flow equations can be written
+
+                                                                                                                                                                                    * Random Walk interpretation
+                                                                                                                                                                                    * r is a stationary distribution for the random walk.
+                                                                                                                                                                                    * For graphs that satisfy certain conditions, the stationary distribution is unique and eventually will be reached no matter what the initial probability distribution at time t = 0.
+                                                                                                                                                                                    1. The google formulation
+                                                                                                                                                                                    * Problems 
+                                                                                                                                                                                    * Some pages are dead ends (have no out-links)
+                                                                                                                                                                                    * The matrix is not column stochastic, so our initial assumptions are not met.  
+                                                                                                                                                                                       * Spider traps: all out links are within the group  
+                                                                                                                                                                                       * With traps PageRank scores are not what we want.
+ 
+                                                                                                                                                                                       * Solution: Teleports
+                                                                                                                                                                                       * The google solution for spider traps: at each time step, the random surfer has two options
+                                                                                                                                                                                       * With prob. , follow a link at random
+                                                                                                                                                                                       * With prob. , jump to some random page
+                                                                                                                                                                                       * Common values for  are in the range 0.8 to 0.9.
+                                                                                                                                                                                       * Surfer will teleport out of spider trap within a few time steps
+  
+
+                                                                                                                                                                                          * For dead-ends, teleport can also work: follow random teleport links with probability 1.0 from dead-ends
+  
+
+                                                                                                                                                                                          * PageRank equation
+  
+
+                                                                                                                                                                                          * The google matrix A  
+
+In practice  (make 5 steps on avg., jump)
+                                                                                                                                                                                             * We have a recursive problem: 
+                                                                                                                                                                                             * Example:  
+  
+
+                                                                                                                                                                                                1. Computing PageRank
+                                                                                                                                                                                                * Key step is matrix-vector multiplication 
+                                                                                                                                                                                                * Easy if we have enough main memory to hold , , 
+                                                                                                                                                                                                   * We just rearrange the PageRank equation
+
+where  is a vector with all  entries .
+                                                                                                                                                                                                   * M is a sparse matrix (with no dead-ends)
+                                                                                                                                                                                                   * So, in each iteration, we need to 
+                                                                                                                                                                                                   * Compute 
+                                                                                                                                                                                                   * Add a constant value  to each entry in 
+Note: if M contains dead-ends then  and we also have to renormalize  so that it sums to 1.
+                                                                                                                                                                                                      * The complete algorithm
+      
+                                                                                                                                                                                                      * Assume enough RAM to fit  into memory, store  and matrix  on disk
+                                                                                                                                                                                                         * 1 step of power-iteration is:
+  
+
+                                                                                                                                                                                                         * In each iteration, we have to:
+                                                                                                                                                                                                         * Read  and matrix 
+                                                                                                                                                                                                         * Write  back to disk
+                                                                                                                                                                                                         * Cost per iteration of power method: 
+                                                                                                                                                                                                            * If we couldn’t fit  in memory?
+                                                                                                                                                                                                               * Break  into  blocks that fit in memory.
+                                                                                                                                                                                                               * Scan  and  once for each block.
+                                                                                                                                                                                                                  1. Topic-Specific PageRank (measure popularity within a topic from a page)
+                                                                                                                                                                                                                  * Measures generic popularity of a page 
+                                                                                                                                                                                                                  * Biased against topic-specific authorities
+                                                                                                                                                                                                                  * Allows each query to be answered based on interests of the user
+                                                                                                                                                                                                                  * Goal: Evaluate Web pages not just according to their popularity, but by how close they are to a particular topic, e.g. sports or history
+                                                                                                                                                                                                                  * Teleport go to a topic-specific set of relevant pages (teleport set)
+                                                                                                                                                                                                                  * SimRank: random walks from a fixed node on k-partite graphs
+                                                                                                                                                                                                                  * Setting k-partite graph with k types of nodes
+                                                                                                                                                                                                                  * Topic Specific PageRank from node u: teleport set = {u}
+                                                                                                                                                                                                                  * Resulting scores measures similarity to node u
+                                                                                                                                                                                                                  * Problem:
+                                                                                                                                                                                                                  * Must be done once for each node u
+                                                                                                                                                                                                                  * Suitable for sub-web-scale applications
+                                                                                                                                                                                                                  1. Summary
+                                                                                                                                                                                                                  * Normal PageRank:
+                                                                                                                                                                                                                  * Teleports uniformly at random to any node
+                                                                                                                                                                                                                  * All nodes have the same probability of surfer landing there: 
+S = [0.1, 0.1, 0.1]
+                                                                                                                                                                                                                  * Topic-Specific PageRank (Personalized PageRank)
+                                                                                                                                                                                                                  * Teleports to a topic specific set of pages
+                                                                                                                                                                                                                  * Nodes can have different probabilities of surfer landing there:
+S = [0.1, 0, 0.2]
+                                                                                                                                                                                                                  * Random Walk with Restarts
+                                                                                                                                                                                                                  * Topic-Specific PageRank where teleport is always to the same node. 
+S = [0, 1, 0]
+                                                                                                                                                                                                                  1. Hubs-and-authorities 
+                                                                                                                                                                                                                  * Uses a single measure of importance
+                                                                                                                                                                                                                  1. Web spam detection algorithms
+                                                                                                                                                                                                                  1. Spamming: any deliberate action to boost a web page’s position in search engine results, incommensurate with page’s real value
+                                                                                                                                                                                                                  2. Spam: web pages that are result of spamming.
+                                                                                                                                                                                                                  3. TrustRank = topic-specific PageRank with a teleport set of trusted pages
+                                                                                                                                                                                                                  * Artificial link topographies crated in order to boost page rank
+                                                                                                                                                                                                                  * Combating link spam
+                                                                                                                                                                                                                  * Detection and blacklisting of structures that look like spam farms
+                                                                                                                                                                                                                  * Combating term spam
+                                                                                                                                                                                                                  * Analyse text using statistical methods
+                                                                                                                                                                                                                  * Similar to email spam filtering
+                                                                                                                                                                                                                  * Also, useful to detect approximate duplicate page
+                                                                                                                                                                                                                  * Basic principle: approximate isolation
+                                                                                                                                                                                                                  * Sample a set of seed pages from the web
+                                                                                                                                                                                                                  * Have an oracle (human) to identify the good pages and the spam pages in the seed set
+                                                                                                                                                                                                                  1. Community detection
+                                                                                                                                                                                                                  1. Method 1: Strength of weak ties
+                                                                                                                                                                                                                  * Edge betweenness: Number of shortest paths passing over the edge
+                                                                                                                                                                                                                  1. Girvan-Newman
+                                                                                                                                                                                                                  * Divisive hierarchical clustering based on the notion of edge betweenness
+                                                                                                                                                                                                                  * Number of shortest paths passing through the edge
+                                                                                                                                                                                                                  * Algorithm
+                                                                                                                                                                                                                  * Repeat until no edges are left:
+                                                                                                                                                                                                                  * Calculate betweenness of edges
+                                                                                                                                                                                                                  * Remove edges with highest betweenness
+                                                                                                                                                                                                                  * Connected components are communities
+                                                                                                                                                                                                                  * Gives a hierarchical decomposition of network  
+                                                                                                                                                                                                                     * How to compute betweenness?
+                                                                                                                                                                                                                     * Find start node. e.g. node A
+                                                                                                                                                                                                                     * Breath first search starting from A (Figure 1)  
+                                                                                                                                                                                                                     * Count the number of shortest paths from A to all other nodes of the network (Figure 2)
+  
+  
+  
+  
+
+                                                                                                                                                                                                                        * Compute betweenness by working up the tree: If there are multiple paths count them fractionally (Figure 3)
+                                                                                                                                                                                                                        * How to select the number of clusters?
+                                                                                                                                                                                                                        * Communities: set of tightly connected nodes
+                                                                                                                                                                                                                        * Modularity Q is useful for selecting the number of clousters.
+                                                                                                                                                                                                                        * Definition: 
+                                                                                                                                                                                                                        * A measure of how well a network is partitioned into communities
+                                                                                                                                                                                                                        * Given a partitioning of network into groups :
+Marked part need a null model
+
+                                                                                                                                                                                                                           * Modularity of partitioning  of graph :
+  
+
+                                                                                                                                                                                                                              * Modularity values take range [-1, 1]
+                                                                                                                                                                                                                              * It is positive if the number of edges within groups exceeds the expected number
+                                                                                                                                                                                                                              *  means significant community structure
+                                                                                                                                                                                                                                 * Null model: configuration model
+                                                                                                                                                                                                                                 * Given real  on n nodes and  edges, construct rewired network 
+                                                                                                                                                                                                                                    * Same degree distribution but random connections
+                                                                                                                                                                                                                                    * Consider  as a multigraph
+                                                                                                                                                                                                                                    * The expected number of edges between nodes  and  of degrees  and  equals to:
+
+                                                                                                                                                                                                                                       * The expected number of edges in multigraph :  
+
+                                                                                                                                                                                                                                          1. Advertising on the Web
+                                                                                                                                                                                                                                          1. Online Algorithms is similar to the data stream model
+                                                                                                                                                                                                                                          * You get to see the input one piece at a time and need to make irrevocable decisions along the way
+                                                                                                                                                                                                                                          1. Online Bipartite Matching
+  
+
+                                                                                                                                                                                                                                          * Perfect matching: all vertices of the graph are matched
+                                                                                                                                                                                                                                          * Maximum matching: a matching that contains the largest possible number of matches
+                                                                                                                                                                                                                                          * Greedy algorithm for online graph matching problem:
+                                                                                                                                                                                                                                          * Pair the new girl with any eligible boy (if there is none, do not pair girl)
+                                                                                                                                                                                                                                          * Evaluation:
+                                                                                                                                                                                                                                          * Competitive ratio: for input  support greedy produces matching  while an optimal matching is 
+
+                                                                                                                                                                                                                                             * Analysing:
+  
+
+                                                                                                                                                                                                                                             * Summary:
+                                                                                                                                                                                                                                             * Girls  matched in  but not in 
+
+                                                                                                                                                                                                                                                * There are at least  such boys  otherwise the optimal algorithm couldn’t have matched all girls in , 
+so 
+                                                                                                                                                                                                                                                   * By definition of  also: 
+                                                                                                                                                                                                                                                      * Worst case is when 
+                                                                                                                                                                                                                                                         *  then 
+                                                                                                                                                                                                                                                            1. Web advertising
+                                                                                                                                                                                                                                                            * Adwords: 
+                                                                                                                                                                                                                                                            * advertisers bid on search keywords
+                                                                                                                                                                                                                                                            * When someone searches for that keyword, the highest bidder’s ad is shown
+                                                                                                                                                                                                                                                            * Advertiser is charged only if the ad is clicked on
+                                                                                                                                                                                                                                                            * Goal: maximize search engine’s revenues
+                                                                                                                                                                                                                                                            * Simple solution: use the expected revenue per click 
+(i.e., bid*CTR [click through rate])
+                                                                                                                                                                                                                                                            * Complications
+                                                                                                                                                                                                                                                            * Budget: each advertiser has a limited budget (guarantees not charge more than their daily budget)
+                                                                                                                                                                                                                                                            * CTR (click through rate) of an is unknown.
+                                                                                                                                                                                                                                                            * Each ad has different likelihood of being clicked
+                                                                                                                                                                                                                                                            * CTR is measured historically
+                                                                                                                                                                                                                                                            * Greedy algorithm
+                                                                                                                                                                                                                                                            * Balance algorithm 
+                                                                                                                                                                                                                                                            * For each query, pick the advertiser with the largest unspent budget
+                                                                                                                                                                                                                                                            * In general: revenue = budget * number_of_advertiser (1-1/e)
+                                                                                                                                                                                                                                                            * Competitive ratio = 1-1/e
+                                                                                                                                                                                                                                                            * Generalized balance
+     
+
+
+                                                                                                                                                                                                                                                            1. Parallel Computing
+                                                                                                                                                                                                                                                            1. Data Parallelism: independent tasks apply same operation to different elements of a data set.
+                                                                                                                                                                                                                                                            2. Functional parallelism: independent tasks apply different operations to different data elements.
+                                                                                                                                                                                                                                                            3. Pipelining:
+                                                                                                                                                                                                                                                            1. Divide a process into independent stages
+                                                                                                                                                                                                                                                            2. Move objects through stages in sequence
+                                                                                                                                                                                                                                                            3. At any given times, multiple objects being processed
+                                                                                                                                                                                                                                                            1. Dependences and hazards
+                                                                                                                                                                                                                                                            1. If two instructions are data dependent, they cannot execute simultaneously.
+                                                                                                                                                                                                                                                            2. Whether a dependence results in a hazard and whether that hazard actually causes a stall are properties of the pipeline organization.
+                                                                                                                                                                                                                                                            3. Data dependences may occur through registers ore memory.
+                                                                                                                                                                                                                                                            1. Threads vs. Processes
+          
+                                                                                                                                                                                                                                                            1. Processes: 
+                                                                                                                                                                                                                                                            * hard to share resources: easy to avoid unintended sharing
+                                                                                                                                                                                                                                                            * High overhead in adding/removing clients
+                                                                                                                                                                                                                                                            1. Threads:
+                                                                                                                                                                                                                                                            * Easy to share resources: perhaps too easy
+                                                                                                                                                                                                                                                            * Medium overhead
+                                                                                                                                                                                                                                                            * Not much control over scheduling policies
+                                                                                                                                                                                                                                                            * Difficult to debug
+                                                                                                                                                                                                                                                            1. Thread-based designs
+                                                                                                                                                                                                                                                            * Easy to share data structures between threads
+                                                                                                                                                                                                                                                            * Threads are more efficient than processes
+                                                                                                                                                                                                                                                            * Unintentional sharing can introduce subtle and hard to reproduce errors
+                                                                                                                                                                                                                                                            1. Creating parallel machines
+     
+                                                                                                                                                                                                                                                            1. Single instruction stream, multiple data streams (SIMD) Parallelism
+                                                                                                                                                                                                                                                            1. Exploit significant data level parallelism for 
+                                                                                                                                                                                                                                                            * Matrix- oriented scientific computing
+                                                                                                                                                                                                                                                            * Media-oriented image an sound processors
+                                                                                                                                                                                                                                                            1. More energy efficient than MIMD
+                                                                                                                                                                                                                                                            2. Allows programmer to continue to think sequentially
+                                                                                                                                                                                                                                                            3. Contains:
+                                                                                                                                                                                                                                                            * Vector architectures
+                                                                                                                                                                                                                                                            * Basic idea
+                                                                                                                                                                                                                                                            * Read sets of data elements into ‘vector registers’
+                                                                                                                                                                                                                                                            * Operate on those registers
+                                                                                                                                                                                                                                                            * Disperse the results back into memory
+                                                                                                                                                                                                                                                            * Register are controlled by compiler
+                                                                                                                                                                                                                                                            * Used to hide memory latency
+                                                                                                                                                                                                                                                            * Leverage memory bandwidth
+                                                                                                                                                                                                                                                            * Multimedia extensions.    
+      
+                                                                                                                                                                                                                                                            * Graphics processor units
+                                                                                                                                                                                                                                                            * Memory wall: the growing disparity of speed between the chip and performing off-chip memory transactions.
+                                                                                                                                                                                                                                                            * Memory latency is a barrier to performance improvements
+                                                                                                                                                                                                                                                            * Latency: the amount of time it takes for an operation to complete
+                                                                                                                                                                                                                                                            * Memory wall: due to latency and limited communication bandwidth beyond chip boundaries.
+                                                                                                                                                                                                                                                            * Bandwidth: how much data can be transferred per second
+                                                                                                                                                                                                                                                            * Writing CUDA software:
+                                                                                                                                                                                                                                                            * High Priority Recommendations:
+                                                                                                                                                                                                                                                            * To get the maximum benefit from CUDA, focus first on finding ways to parallelize your solution.
+                                                                                                                                                                                                                                                            * Use the effective bandwidth of your computation as a metric when measuring performance and optimization benefits.
+                                                                                                                                                                                                                                                            * Minimize data transfer between the host and the device, even if it means running some kernels on the device that do not show performance gains when compared with running them on the host CPU.
+                                                                                                                                                                                                                                                            * Ensure global memory accesses are coalesced whenever possible.
+                                                                                                                                                                                                                                                            * Minimize the use of global memory. Prefer shared memory access where possible.
+                                                                                                                                                                                                                                                            * Avoid different execution paths within the same warp.
+                                                                                                                                                                                                                                                            * Medium Priority Recommendations:
+                                                                                                                                                                                                                                                            * Accesses to shared memory should be designed to avoid serializing requests due to bank conflicts.
+                                                                                                                                                                                                                                                            * To hide latency arising from register dependencies, maintain sufficient numbers of active threads per multiprocessor (i.e., sufficient occupancy).
+                                                                                                                                                                                                                                                            * The number of threads per block should be a multiple of 32 threads because this provides optimal computing efficiency and facilitates coalescing. 
+                                                                                                                                                                                                                                                            * Use the fast math library whenever speed is important and you can live with a tiny loss of accuracy.
+                                                                                                                                                                                                                                                            * Prefer faster, more specialized math functions over slower, more
+                                                                                                                                                                                                                                                            * general ones when possible
+                                                                                                                                                                                                                                                            * Low Priority Recommendations:
+                                                                                                                                                                                                                                                            * For kernels with long argument lists, place some arguments into constant memory to save shared memory.
+                                                                                                                                                                                                                                                            * Use shift operations to avoid expensive division and modulo calculations.
+                                                                                                                                                                                                                                                            * Avoid automatic conversion of doubles to floats.
+                                                                                                                                                                                                                                                            * Make it easy for the compiler to use branch predication in lieu of loops or control statements.
+                                                                                                                                                                                                                                                            * The common pattern to CUDA Programming
+                                                                                                                                                                                                                                                            * Phase 1: Allocate memory on the device and copy to the device the data required to carry out computation on the GPU.
+                                                                                                                                                                                                                                                            * Phase 2: GPU crunches numbers based on the kernel you defined.
+                                                                                                                                                                                                                                                            * Phase 3: Bring back the results from the GPU. Free memory on the device (clean up…)
+                                                                                                                                                                                                                                                            * Rules of Thumb for Efficient GPU Computing:
+                                                                                                                                                                                                                                                            * 1. Get the data on the GPU and keep it there
+                                                                                                                                                                                                                                                            * 2. Give the GPU enough work to do
+                                                                                                                                                                                                                                                            * 3. Focus on data reuse within the GPU to avoid memory bandwidth limitations
+                                                                                                                                                                                                                                                            1. Multiple instruction streams, single data streams (MISD) – no commercial implementation
+                                                                                                                                                                                                                                                            2. Multiple instruction streams, multiple data streams (MIMD)
+
+
+                                                                                                                                                                                                                                                            1. Python MPI https://nyu-cds.github.io/python-mpi/
+                                                                                                                                                                                                                                                            2. The raft consensus algorithm (http://raftconsensus.github.io)
+                                                                                                                                                                                                                                                            1. Consensus
+                                                                                                                                                                                                                                                            1. Agreement on shared state (single system image)
+                                                                                                                                                                                                                                                            2. Recovers from server failures autonomously
+                                                                                                                                                                                                                                                            3. Key to building consistent storage systems
+                                                                                                                                                                                                                                                            1. Raft overview
+                                                                                                                                                                                                                                                            1. Leader election
+                                                                                                                                                                                                                                                            * Select one of the servers to act as cluster leader
+                                                                                                                                                                                                                                                            * Detect crashes, choose new leader
+                                                                                                                                                                                                                                                            1. Log replication (normal operation)
+                                                                                                                                                                                                                                                            * Leader takes commands from clients, appends them to its log
+                                                                                                                                                                                                                                                            * Leader replicates its log to other servers (overwriting inconsistencies)
+                                                                                                                                                                                                                                                            1. Safety
+                                                                                                                                                                                                                                                            * Only a server with an up-to-date log can become leader
+                                                                                                                                                                                                                                                            1. RaftScope visualization
+                                                                                                                                                                                                                                                            1. Core Raft Review
+                                                                                                                                                                                                                                                            * Leader election
+                                                                                                                                                                                                                                                            * Heartbeats and timeouts to detect crashes
+                                                                                                                                                                                                                                                            * Randomized timeouts to avoid split votes
+                                                                                                                                                                                                                                                            * Majority voting to guarantee at most one leader per term
+                                                                                                                                                                                                                                                            * Log replication (normal operation)
+                                                                                                                                                                                                                                                            * Leader takes commands from clients, appends them to its log
+                                                                                                                                                                                                                                                            * Leader replicates its log to other servers (overwriting inconsistencies)
+                                                                                                                                                                                                                                                            * Built-in consistency check simplifies how logs may differ
+                                                                                                                                                                                                                                                            * Safety
+                                                                                                                                                                                                                                                            * Only elect leaders with all committed entries in their logs
+                                                                                                                                                                                                                                                            * New leader defers committing entries from prior terms
+                                                                                                                                                                                                                                                            1. Conclusions
+                                                                                                                                                                                                                                                            1. Consensus widely regarded as difficult
+                                                                                                                                                                                                                                                            2. Raft designed for understandability
+                                                                                                                                                                                                                                                            * Easier to teach in classrooms
+                                                                                                                                                                                                                                                            * Better foundation for building practical systems
+                                                                                                                                                                                                                                                            1. Paper/thesis covers much more
+                                                                                                                                                                                                                                                            * Cluster membership changes (simpler in thesis)
+                                                                                                                                                                                                                                                            * Log compaction (expanded tech report/thesis)
+                                                                                                                                                                                                                                                            * Client interaction (expanded tech report/thesis)
+                                                                                                                                                                                                                                                            * Evaluation (thesis)
+
+
+
+
+
+
+Point to point communication in MPI is a message sent directly from Process A to Process B 
+In MPI, deadlock occurs when  at least one process is blocked waiting for a communication it will never receive
+
+
+
+
+
+
+[('John', 'Sarah'), ('John', 'Malcolm'), ('John', 'Winnie'), 
+('Malcolm', 'Sarah'), ('Sarah', 'Winnie'),
+ ('Malcolm', 'Winnie'),
+ ('Malcolm', 'Sarah'), ('Sarah', 'Winnie'), ('Fred', 'Sarah'), 
+('Malcolm', 'Winnie'), ('Fred', 'Malcolm'),
+ ('Fred', 'Winnie'), 
+('Sarah', 'Winnie'), ('Fred', 'Sarah'), ('Charles', 'Sarah'),
+ ('Fred', 'Winnie'), ('Charles', 'Winnie'), 
+'Charles', 'Fred'), 
+
+
+('Malcolm', 'Sarah'), ('Sarah', 'Winnie'), ('Charles', 'Sarah'), 
+('Malcolm', 'Winnie'), ('Charles', 'Malcolm'), 
+('Charles', 'Winnie')]
